@@ -1,0 +1,27 @@
+﻿from __future__ import annotations
+
+from dataclasses import dataclass, field
+from pathlib import Path
+
+import yaml
+
+
+@dataclass
+class Config:
+    brute_force_window_seconds: int = 300
+    brute_force_threshold: int = 5
+    lateral_window_seconds: int = 300
+    lateral_unique_hosts_threshold: int = 5
+    privileged_accounts: set[str] = field(default_factory=lambda: {"admin", "administrator", "root"})
+    rare_process_min_count: int = 1
+
+
+    @classmethod
+    def load(cls, path: str | None = None) -> "Config":
+        if not path:
+            return cls()
+        data = yaml.safe_load(Path(path).read_text(encoding="utf-8")) or {}
+        privileged = data.get("privileged_accounts")
+        if privileged is not None:
+            data["privileged_accounts"] = set(privileged)
+        return cls(**data)

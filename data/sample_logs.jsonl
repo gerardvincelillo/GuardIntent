@@ -1,0 +1,12 @@
+{"timestamp":"2026-02-28T09:00:01Z","source":"auth","event_type":"auth","src_ip":"203.0.113.9","username":"admin","action":"failed","hostname":"AUTH01"}
+{"timestamp":"2026-02-28T09:00:20Z","source":"auth","event_type":"auth","src_ip":"203.0.113.9","username":"admin","action":"failed","hostname":"AUTH01"}
+{"timestamp":"2026-02-28T09:00:40Z","source":"auth","event_type":"auth","src_ip":"203.0.113.9","username":"admin","action":"failed","hostname":"AUTH01"}
+{"timestamp":"2026-02-28T09:01:00Z","source":"auth","event_type":"auth","src_ip":"203.0.113.9","username":"admin","action":"failed","hostname":"AUTH01"}
+{"timestamp":"2026-02-28T09:01:20Z","source":"auth","event_type":"auth","src_ip":"203.0.113.9","username":"admin","action":"failed","hostname":"AUTH01"}
+{"timestamp":"2026-02-28T09:02:00Z","source":"dns","event_type":"dns","src_ip":"10.0.2.15","domain":"malicious.example","action":"allowed","hostname":"DNS01"}
+{"timestamp":"2026-02-28T09:02:40Z","source":"endpoint","event_type":"process","src_ip":"10.0.2.15","username":"jdoe","hostname":"WIN-007","process_name":"mimikatz.exe","hash_sha256":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","action":"success"}
+{"timestamp":"2026-02-28T09:03:00Z","source":"firewall","event_type":"network","src_ip":"10.0.2.15","dst_ip":"10.0.3.10","action":"allowed"}
+{"timestamp":"2026-02-28T09:03:20Z","source":"firewall","event_type":"network","src_ip":"10.0.2.15","dst_ip":"10.0.3.11","action":"allowed"}
+{"timestamp":"2026-02-28T09:03:40Z","source":"firewall","event_type":"network","src_ip":"10.0.2.15","dst_ip":"10.0.3.12","action":"allowed"}
+{"timestamp":"2026-02-28T09:04:00Z","source":"firewall","event_type":"network","src_ip":"10.0.2.15","dst_ip":"10.0.3.13","action":"allowed"}
+{"timestamp":"2026-02-28T09:04:20Z","source":"firewall","event_type":"network","src_ip":"10.0.2.15","dst_ip":"10.0.3.14","action":"allowed"}

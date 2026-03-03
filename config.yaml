@@ -1,0 +1,9 @@
+﻿brute_force_window_seconds: 300
+brute_force_threshold: 5
+lateral_window_seconds: 300
+lateral_unique_hosts_threshold: 5
+privileged_accounts:
+  - admin
+  - administrator
+  - root
+rare_process_min_count: 1
