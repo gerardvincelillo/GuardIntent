@@ -36,6 +36,7 @@ def write_markdown_report(path: str | Path, incidents: list[Incident], run_meta:
                     f"- Severity: **{incident.severity.title()}**",
                     f"- Score: **{incident.score}**",
                     f"- Rule Hits: {', '.join(incident.rule_hits)}",
+                    f"- MITRE Techniques: {', '.join(incident.mitre_techniques) if incident.mitre_techniques else 'N/A'}",
                     f"- Entities: {incident.entities}",
                     "- Recommendations:",
                 ]
@@ -62,6 +63,8 @@ def write_markdown_report(path: str | Path, incidents: list[Incident], run_meta:
         [
             _section("Matched IOCs"),
             "See incident evidence for IOC details.",
+            _section("MITRE ATT&CK Mapping"),
+            "Mapped techniques are listed in each incident overview.",
             _section("Affected Assets"),
             "See entities field per incident.",
             _section("Timeline"),

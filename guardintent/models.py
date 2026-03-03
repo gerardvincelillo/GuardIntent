@@ -32,6 +32,7 @@ class RuleHit:
     evidence: dict[str, Any]
     recommendation: str
     entities: dict[str, Any]
+    mitre_techniques: list[str] = field(default_factory=list)
 
 
 @dataclass
@@ -43,3 +44,5 @@ class Incident:
     entities: dict[str, Any]
     evidence: list[dict[str, Any]]
     recommendations: list[str]
+    mitre_techniques: list[str] = field(default_factory=list)
+    enrichments: dict[str, Any] = field(default_factory=dict)

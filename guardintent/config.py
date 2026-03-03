@@ -14,6 +14,15 @@ class Config:
     lateral_unique_hosts_threshold: int = 5
     privileged_accounts: set[str] = field(default_factory=lambda: {"admin", "administrator", "root"})
     rare_process_min_count: int = 1
+    plugin_paths: list[str] = field(default_factory=list)
+    enrich_virustotal: bool = False
+    virustotal_api_key: str | None = None
+    export_webhook_url: str | None = None
+    jira_base_url: str | None = None
+    jira_user: str | None = None
+    jira_api_token: str | None = None
+    jira_project_key: str | None = None
+    jira_issue_type: str = "Task"
 
 
     @classmethod

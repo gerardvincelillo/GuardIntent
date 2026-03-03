@@ -1,4 +1,4 @@
-﻿brute_force_window_seconds: 300
+brute_force_window_seconds: 300
 brute_force_threshold: 5
 lateral_window_seconds: 300
 lateral_unique_hosts_threshold: 5
@@ -7,3 +7,12 @@ privileged_accounts:
   - administrator
   - root
 rare_process_min_count: 1
+plugin_paths: []
+enrich_virustotal: false
+virustotal_api_key: null
+export_webhook_url: null
+jira_base_url: null
+jira_user: null
+jira_api_token: null
+jira_project_key: null
+jira_issue_type: Task

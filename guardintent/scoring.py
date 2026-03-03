@@ -38,6 +38,7 @@ def aggregate_hits(hits: list[RuleHit]) -> list[Incident]:
         for hit in group:
             entities.update({k: v for k, v in hit.entities.items() if v})
         recommendations = sorted({h.recommendation for h in group})
+        mitre_techniques = sorted({tech for h in group for tech in h.mitre_techniques})
         title = " & ".join(h.name for h in group[:2])
         incidents.append(
             Incident(
@@ -48,6 +49,7 @@ def aggregate_hits(hits: list[RuleHit]) -> list[Incident]:
                 entities=entities,
                 evidence=[h.evidence for h in group],
                 recommendations=recommendations,
+                mitre_techniques=mitre_techniques,
             )
         )
     incidents.sort(key=lambda i: i.score, reverse=True)

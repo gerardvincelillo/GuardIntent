@@ -1,59 +1,66 @@
-﻿# GuardIntent
+# GuardIntent
 
-GuardIntent is a CLI-based security automation and triage framework that ingests log dumps, correlates against IOC feeds, runs detection rules, scores incident risk, and exports incident-style reports in Markdown and JSON.
+GuardIntent is a CLI security automation and triage framework for SOC-style workflows. It ingests logs, correlates IOC feeds, runs rule detections, scores incidents, enriches findings, and exports incident reports.
 
-## Why This Project
+## Implemented Capabilities
 
-GuardIntent demonstrates:
-- SOC detection engineering mindset
-- Python modular architecture for security workflows
-- IOC correlation and rule-driven detections
-- Practical CLI UX for repeatable triage
-- Shareable outputs for analyst and stakeholder review
-
-## Features (v1 MVP)
-
-- Log ingestion: `.jsonl`, `.json`, `.csv`
-- IOC ingestion: `.txt` and `.json`
-- IOC support: IPv4/IPv6, domains, URLs, SHA-256
-- Detections:
+- Log parsing and normalization
+  - Input: JSONL, JSON, CSV
+  - Unified event schema for auth/network/process/DNS
+- IOC engine
+  - Input: TXT, JSON
+  - IOC types: IP, domain, URL, SHA-256
+  - Validation and deduplication
+- Detection rules with MITRE ATT&CK mappings
   - `ioc_match`
   - `brute_force`
   - `privileged_abnormal`
   - `rare_process`
   - `lateral_movement`
-- Incident scoring and severity mapping
-- Report exports:
-  - Markdown incident report
-  - JSON structured incident report
-- Timestamped outputs under `reports/`
+- Plugin rule system
+  - Load custom rules using `--plugin path/to/plugin.py`
+  - Example plugin: `plugins/sample_custom_rule.py`
+- Scoring and triage
+  - Severity: low, medium, high, critical
+- Report generation
+  - Markdown, JSON, HTML dashboard
+- Optional enrich/export integrations
+  - VirusTotal enrichment (`--enrich-vt`, API key required)
+  - Webhook export (`--webhook-url`)
+  - Jira issue creation (`--jira-*`)
+- Delivery tooling
+  - Dockerfile
+  - GitHub Actions CI workflow
 
-## Repository Layout
+## Project Structure
 
 ```text
 GuardIntent/
-├── guardintent/
-│   ├── cli.py
-│   ├── config.py
-│   ├── models.py
-│   ├── scoring.py
-│   ├── utils.py
-│   ├── normalize/
-│   ├── iocs/
-│   ├── rules/
-│   └── reporting/
-├── data/
-│   ├── sample_logs.jsonl
-│   └── sample_iocs.txt
-├── reports/
-├── tests/
-├── config.yaml
-├── PLAN.md
-├── pyproject.toml
-└── README.md
+|-- guardintent/
+|   |-- cli.py
+|   |-- config.py
+|   |-- models.py
+|   |-- scoring.py
+|   |-- normalize/
+|   |-- iocs/
+|   |-- rules/
+|   |-- plugins/
+|   |-- enrichment/
+|   |-- integrations/
+|   \\-- reporting/
+|-- plugins/
+|   \\-- sample_custom_rule.py
+|-- data/
+|-- reports/
+|-- tests/
+|-- .github/workflows/ci.yml
+|-- Dockerfile
+|-- config.yaml
+|-- PLAN.md
+\\-- pyproject.toml
 ```
 
-## Installation
+## Install
 
 ```bash
 python -m venv .venv
@@ -69,106 +76,90 @@ python -m pip install pytest
 
 ## CLI Usage
 
-### 1) Full scan pipeline
+### Full scan
 
 ```bash
 guardintent scan \
   --logs data/sample_logs.jsonl \
   --iocs data/sample_iocs.txt \
   --out reports \
-  --format md,json \
+  --format md,json,html \
   --min-severity medium \
   --config config.yaml \
   --verbose
 ```
 
-### 2) Normalize logs only
+### Scan with plugin rule
+
+```bash
+guardintent scan \
+  --logs data/sample_logs.jsonl \
+  --iocs data/sample_iocs.txt \
+  --plugin plugins/sample_custom_rule.py \
+  --format json,html \
+  --out reports
+```
+
+### Scan with enrichment/export integrations
+
+```bash
+guardintent scan \
+  --logs data/sample_logs.jsonl \
+  --iocs data/sample_iocs.txt \
+  --enrich-vt \
+  --vt-api-key <VT_API_KEY> \
+  --webhook-url https://example.com/hook \
+  --jira-url https://your-org.atlassian.net \
+  --jira-user you@example.com \
+  --jira-token <JIRA_API_TOKEN> \
+  --jira-project-key SEC
+```
+
+### Other commands
 
 ```bash
 guardintent parse --logs data/sample_logs.jsonl --out data/normalized_logs.jsonl
-```
-
-### 3) Validate and count IOCs
-
-```bash
 guardintent iocs --iocs data/sample_iocs.txt
-```
-
-### 4) Rule discovery
-
-```bash
 guardintent rules --list
 guardintent rules --show brute_force
 ```
 
-## Event Schema
+## Rule Plugin Interface
 
-All parsed records normalize into this common event shape:
+A plugin module must expose a `RULES` variable containing rule classes that inherit `BaseRule`.
 
-```json
-{
-  "timestamp": "2026-02-28T09:00:01Z",
-  "source": "firewall|auth|endpoint|dns",
-  "event_type": "auth|network|process|dns|web",
-  "src_ip": "1.2.3.4",
-  "dst_ip": "5.6.7.8",
-  "domain": "example.com",
-  "url": "http://example.com/path",
-  "username": "user123",
-  "hostname": "HOST01",
-  "process_name": "powershell.exe",
-  "hash_sha256": "abcdef...",
-  "action": "allowed|blocked|failed|success",
-  "raw": {}
-}
+```python
+RULES = [MyCustomRule]
 ```
 
-## Scoring and Severity
+## Severity Mapping
 
-- `0-24`: Low
-- `25-49`: Medium
-- `50-74`: High
-- `75+`: Critical
+- `0-24`: low
+- `25-49`: medium
+- `50-74`: high
+- `75+`: critical
 
-Scores are cumulative across rule hits grouped by affected entities.
-
-## Output Reports
-
-`guardintent scan` writes timestamped files, for example:
-- `reports/guardintent_report_20260303T150000Z.md`
-- `reports/guardintent_report_20260303T150000Z.json`
-
-Markdown report sections:
-- Executive Summary
-- Incident Overview
-- Severity Breakdown
-- Rule Hits & Evidence
-- Matched IOCs
-- Affected Assets
-- Timeline
-- Recommendations
-- Appendix
-
-## Test
+## Testing
 
 ```bash
-pytest -q
+python -m pytest -q
 ```
 
-## Milestone Status (v1)
+## Docker
 
-- Milestone 1: Basic CLI - complete
-- Milestone 2: Log parsing/normalization - complete
-- Milestone 3: IOC engine - complete
-- Milestone 4: Detection rules/scoring - complete
-- Milestone 5: Report generation - complete
-- Milestone 6: tests and sample dataset - complete
+```bash
+docker build -t guardintent:latest .
+docker run --rm guardintent:latest --help
+```
 
-## Next Enhancements (v2+)
+## CI
 
-- Rule plugin architecture
-- MITRE ATT&CK technique tagging
-- Threat intel enrichment connectors
-- Jira/webhook integrations
-- HTML dashboard output
-- GitHub Actions CI and Docker packaging
+GitHub Actions workflow at `.github/workflows/ci.yml` runs tests on Python 3.10, 3.11, and 3.12.
+
+## Current Gaps / Next Improvements
+
+- Add retry/backoff and rate-limit handling for VirusTotal/Jira/webhook requests.
+- Add richer IOC extraction for enrichment beyond direct IOC match evidence.
+- Add ATT&CK tactic metadata (not only technique IDs).
+- Improve incident grouping strategy with temporal windows and graph-based entities.
+- Expand test coverage for integration failure paths and report rendering edge cases.

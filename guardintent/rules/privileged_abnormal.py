@@ -9,6 +9,7 @@ class PrivilegedAbnormalRule(BaseRule):
     rule_id = "privileged_abnormal"
     name = "Privileged Abnormal Activity"
     description = "Flags suspicious actions involving privileged users"
+    mitre_techniques = ["T1078", "T1068"]
 
     def run(self, events: list[Event], config: Config, **kwargs) -> list[RuleHit]:
         hits: list[RuleHit] = []
@@ -27,6 +28,7 @@ class PrivilegedAbnormalRule(BaseRule):
                         evidence={"event": event.to_dict()},
                         recommendation="Review privileged account activity and rotate credentials if needed.",
                         entities={"user": event.username, "src_ip": event.src_ip, "hostname": event.hostname},
+                        mitre_techniques=self.mitre_techniques,
                     )
                 )
         return hits

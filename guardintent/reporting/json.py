@@ -20,6 +20,8 @@ def write_json_report(path: str | Path, incidents: list[Incident], run_meta: dic
                 "entities": i.entities,
                 "evidence": i.evidence,
                 "recommendations": i.recommendations,
+                "mitre_techniques": i.mitre_techniques,
+                "enrichments": i.enrichments,
             }
             for i in incidents
         ],
