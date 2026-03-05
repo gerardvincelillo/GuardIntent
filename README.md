@@ -25,6 +25,8 @@ GuardIntent is a CLI security automation and triage framework for SOC-style work
   - Graph-based incident grouping with temporal window correlation
 - Report generation
   - Markdown, JSON, HTML dashboard
+- Report drift analysis
+  - compare baseline/current JSON reports and flag regressions
 - Optional enrich/export integrations
   - VirusTotal enrichment (`--enrich-vt`, API key required)
   - Webhook export (`--webhook-url`)
@@ -124,6 +126,7 @@ guardintent parse --logs data/sample_logs.jsonl --out data/normalized_logs.jsonl
 guardintent iocs --iocs data/sample_iocs.txt
 guardintent rules --list
 guardintent rules --show brute_force
+guardintent compare --baseline reports/old.json --current reports/new.json --out reports/diff.json
 ```
 
 ## Rule Plugin Interface

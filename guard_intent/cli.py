@@ -14,6 +14,7 @@ from guard_intent.integrations.exporters import create_jira_issues, post_webhook
 from guard_intent.models import RuleHit
 from guard_intent.normalize.normalizer import parse_logs
 from guard_intent.plugins.loader import load_plugin_rules
+from guard_intent.reporting.diff import compare_reports
 from guard_intent.reporting.html import write_html_report
 from guard_intent.reporting.json import write_json_report
 from guard_intent.reporting.markdown import write_markdown_report
@@ -221,6 +222,39 @@ def scan(
         )
         if verbose:
             console.print(f"Jira issues created: {len(created)}")
+
+
+@app.command("compare")
+def compare(
+    baseline: str = typer.Option(..., "--baseline", help="Path to baseline GuardIntent JSON report"),
+    current: str = typer.Option(..., "--current", help="Path to current GuardIntent JSON report"),
+    out: str | None = typer.Option(None, "--out", help="Optional output path for comparison JSON"),
+) -> None:
+    """Compare two GuardIntent JSON reports and summarize drift."""
+    baseline_payload = json.loads(Path(baseline).read_text(encoding="utf-8"))
+    current_payload = json.loads(Path(current).read_text(encoding="utf-8"))
+    result = compare_reports(baseline_payload, current_payload)
+
+    console.print("[bold]GuardIntent Incident Drift[/bold]")
+    console.print(
+        f"- Incidents: {result['baseline_incident_count']} -> {result['current_incident_count']} "
+        f"({result['incident_count_delta']:+d})"
+    )
+    console.print(f"- Status: {result['status']}")
+    if result["new_incidents_by_severity"]:
+        console.print(f"- New incidents by severity: {result['new_incidents_by_severity']}")
+    if result["new_incident_titles"]:
+        console.print("- New incidents:")
+        for title in result["new_incident_titles"]:
+            console.print(f"  - {title}")
+    if result["resolved_incident_titles"]:
+        console.print("- Resolved incidents:")
+        for title in result["resolved_incident_titles"]:
+            console.print(f"  - {title}")
+
+    if out:
+        Path(out).parent.mkdir(parents=True, exist_ok=True)
+        Path(out).write_text(json.dumps(result, indent=2), encoding="utf-8")
 
 
 if __name__ == "__main__":
