@@ -169,4 +169,9 @@ GitHub Actions workflow at `.github/workflows/ci.yml` runs tests on Python 3.10,
 - Add snapshot tests for full Markdown/HTML report rendering.
 - Add benchmark tests for large log files and high-cardinality IOC sets.
 
+## Docs
 
+- `docs/README.md`: docs index for the repository
+- `docs/IMPLEMENTATION-CHECKLIST.md`
+- `docs/PROJECT-VISION.md`
+- `docs/STACK-INVENTORY.md`
